@@ -1,18 +1,10 @@
 class Solution {
-     static {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try (FileWriter writer = new FileWriter("display_runtime.txt")) {
-                writer.write("00");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-    }
     public int orangesRotting(int[][] grid) {
+        Queue<int[]> q = new LinkedList<>();
         int m = grid.length;
         int n = grid[0].length;
-        Queue<int[]> q = new LinkedList<>();
         int fresh = 0;
+        int minutes = 0;
         for(int i=0;i<m;i++)
         {
             for(int j=0;j<n;j++)
@@ -27,45 +19,38 @@ class Solution {
                 }
             }
         }
-        if(fresh==0)
-        {
-            return 0;
-        } 
-
-        int minutes = 0;
-       int[] xCor = {-1, 0, 0, 1};
-       int[] yCor = {0, -1, 1, 0};
-
+        if(fresh==0) return 0;
+        int[] xCor = {-1,0,0,1};
+        int[] yCor = {0,-1,1,0};
         while(!q.isEmpty())
         {
-            int size = q.size();
             boolean rotted = false;
-
+            int size = q.size();
             for(int i=0;i<size;i++)
             {
-                int[] cell = q.poll();
-                int r =  cell[0];
-                int c = cell[1];
-                for(int k=0;k<4;k++)
-                {
-                    int nr = r + xCor[k];
-                    int nc = c + yCor[k];
 
-                     if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] == 1)
-                    {
-                        q.offer(new int[]{nr,nc});
-                        rotted = true;
-                        grid[nr][nc] = 2;
-                        fresh--;
-                    }
+                int[] arr = q.poll();
+            int r = arr[0];
+            int c = arr[1];
+            
+            
+            for(int k=0;k<4;k++)
+            {
+                int newRow = xCor[k]+r;
+                int newCol = yCor[k]+c;
+
+                if(newRow>=0 && newRow<m && newCol>=0 && newCol<n && grid[newRow][newCol]==1 )
+                {
+                    grid[newRow][newCol]=2;
+                    fresh--;
+                    q.offer(new int[]{newRow,newCol});
+                    rotted = true;
                 }
             }
-
+            }
             if(rotted) minutes++;
         }
 
-        return fresh==0?minutes:-1;
-         
+        return (fresh==0)?minutes:-1;
     }
-
 }
